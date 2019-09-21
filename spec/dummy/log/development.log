@@ -1,0 +1,53 @@
+  [1m[35m (768.9ms)[0m  [1m[35mCREATE DATABASE "neewom_gem_dev" ENCODING = 'unicode'[0m
+  [1m[35m (330.5ms)[0m  [1m[35mCREATE DATABASE "neewom_gem_test" ENCODING = 'unicode'[0m
+  [1m[35m (28.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (24.5ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(8056397077161803370)[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateNeewomTables (20190921160721)
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (15.4ms)[0m  [1m[35mCREATE TABLE "neewom_forms" ("id" bigserial primary key, "key" character varying NOT NULL, "description" character varying, "crc32" character varying NOT NULL, "repository_klass" character varying NOT NULL, "template" character varying NOT NULL, "persist_submit_controls" boolean DEFAULT FALSE, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (5.1ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_neewom_forms_on_key" ON "neewom_forms"  ("key")[0m
+  [1m[35m (5.8ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_neewom_forms_on_crc32" ON "neewom_forms"  ("crc32")[0m
+  [1m[35m (14.6ms)[0m  [1m[35mCREATE TABLE "neewom_fields" ("id" bigserial primary key, "form_id" integer NOT NULL, "order" integer DEFAULT 0 NOT NULL, "label" character varying, "name" character varying NOT NULL, "input" character varying, "virtual" boolean, "validations" character varying, "collection_klass" character varying, "collection_method" character varying, "collection_params" character varying, "label_method" character varying, "value_method" character varying, "input_html" character varying, "custom_options" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (5.5ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_neewom_fields_on_form_id_and_name" ON "neewom_fields"  ("form_id", "name")[0m
+  [1m[36mprimary::SchemaMigration Create (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20190921160721"]]
+  [1m[35m (2.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", "2019-09-21 16:07:40.252036"], ["updated_at", "2019-09-21 16:07:40.252036"]]
+  [1m[35m (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_advisory_unlock(8056397077161803370)[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1[0m  [["key", "environment"]]
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1[0m  [["key", "environment"]]
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1[0m  [["key", "environment"]]
+  [1m[35m (208.7ms)[0m  [1m[35mDROP DATABASE IF EXISTS "neewom_gem_test"[0m
+  [1m[35m (238.9ms)[0m  [1m[35mCREATE DATABASE "neewom_gem_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "neewom_fields" CASCADE[0m
+  [1m[35m (21.7ms)[0m  [1m[35mCREATE TABLE "neewom_fields" ("id" bigserial primary key, "form_id" integer NOT NULL, "order" integer DEFAULT 0 NOT NULL, "label" character varying, "name" character varying NOT NULL, "input" character varying, "virtual" boolean, "validations" character varying, "collection_klass" character varying, "collection_method" character varying, "collection_params" character varying, "label_method" character varying, "value_method" character varying, "input_html" character varying, "custom_options" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (9.3ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_neewom_fields_on_form_id_and_name" ON "neewom_fields"  ("form_id", "name")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "neewom_forms" CASCADE[0m
+  [1m[35m (19.4ms)[0m  [1m[35mCREATE TABLE "neewom_forms" ("id" bigserial primary key, "key" character varying NOT NULL, "description" character varying, "crc32" character varying NOT NULL, "repository_klass" character varying NOT NULL, "template" character varying NOT NULL, "persist_submit_controls" boolean DEFAULT FALSE, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (9.6ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_neewom_forms_on_crc32" ON "neewom_forms"  ("crc32")[0m
+  [1m[35m (9.4ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_neewom_forms_on_key" ON "neewom_forms"  ("key")[0m
+  [1m[35m (20.8ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (1.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20190921160721)[0m
+  [1m[35m (19.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", "2019-09-21 16:07:40.944172"], ["updated_at", "2019-09-21 16:07:40.944172"]]
+  [1m[35m (1.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Update (0.4ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = $1, "updated_at" = $2 WHERE "ar_internal_metadata"."key" = $3[0m  [["value", "test"], ["updated_at", "2019-09-21 16:07:40.954455"], ["key", "environment"]]
+  [1m[35m (1.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "schema_sha1"], ["value", "da41194d90afad520bbf7f78683a329f5b5ae5e3"], ["created_at", "2019-09-21 16:07:40.963813"], ["updated_at", "2019-09-21 16:07:40.963813"]]
+  [1m[35m (0.7ms)[0m  [1m[35mCOMMIT[0m

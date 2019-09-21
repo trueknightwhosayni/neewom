@@ -1,0 +1,35 @@
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "neewom_fields" DISABLE TRIGGER ALL;ALTER TABLE "neewom_forms" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (2.2ms)[0m  [1m[34m          SELECT schemaname || '.' || tablename
+          FROM pg_tables
+          WHERE
+            tablename !~ '_prt_' AND
+             tablename <> 'schema_migrations'  AND tablename <> 'ar_internal_metadata'  AND
+            schemaname = ANY (current_schemas(false))
+[0m
+  [1m[35m (1.2ms)[0m  [1m[34mselect table_name from information_schema.views where table_schema = 'neewom_gem_test'[0m
+  [1m[35m (68.0ms)[0m  [1m[35mTRUNCATE TABLE "public"."neewom_fields", "public"."neewom_forms" RESTART IDENTITY CASCADE;[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL;ALTER TABLE "neewom_fields" ENABLE TRIGGER ALL;ALTER TABLE "neewom_forms" ENABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mNeewom::CustomForm Load (0.3ms)[0m  [1m[34mSELECT "neewom_forms".* FROM "neewom_forms" WHERE "neewom_forms"."key" = $1 LIMIT $2[0m  [["key", "my_form"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mNeewom::CustomForm Create (0.5ms)[0m  [1m[32mINSERT INTO "neewom_forms" ("key", "crc32", "repository_klass", "template", "persist_submit_controls", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["key", "my_form"], ["crc32", "2232430611"], ["repository_klass", "User"], ["template", "custom_form"], ["persist_submit_controls", true], ["created_at", "2019-09-21 16:10:26.564806"], ["updated_at", "2019-09-21 16:10:26.564806"]]
+  [1m[36mNeewom::CustomField Create (0.6ms)[0m  [1m[32mINSERT INTO "neewom_fields" ("form_id", "label", "name", "input", "virtual", "validations", "collection_klass", "collection_method", "collection_params", "label_method", "value_method", "input_html", "custom_options", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING "id"[0m  [["form_id", 1], ["label", "First field"], ["name", "first_field"], ["input", "text_field"], ["virtual", false], ["validations", "{\"uniqueness\":{\"scope\":\"aaa\"}}"], ["collection_klass", "SomeClass"], ["collection_method", "some_method"], ["collection_params", "[\"current_user\"]"], ["label_method", "some_method"], ["value_method", "some_value_method"], ["input_html", "{\"style\":\"color: red\",\"data\":{\"id\":\"some-id\"}}"], ["custom_options", "{\"some_option\":\"a\"}"], ["created_at", "2019-09-21 16:10:26.566489"], ["updated_at", "2019-09-21 16:10:26.566489"]]
+  [1m[36mNeewom::CustomField Create (0.4ms)[0m  [1m[32mINSERT INTO "neewom_fields" ("form_id", "order", "label", "name", "input", "virtual", "validations", "collection_klass", "collection_method", "collection_params", "label_method", "value_method", "input_html", "custom_options", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING "id"[0m  [["form_id", 1], ["order", 1], ["label", "Second field"], ["name", "second_field"], ["input", "text_area"], ["virtual", true], ["validations", "{\"uniqueness\":{\"scope\":\"aaa\"}}"], ["collection_klass", "SomeClass"], ["collection_method", "some_method"], ["collection_params", "[\"current_user\"]"], ["label_method", "some_method"], ["value_method", "some_value_method"], ["input_html", "{\"style\":\"color: red\",\"data\":{\"id\":\"some-id\"}}"], ["custom_options", "{\"some_option\":\"b\"}"], ["created_at", "2019-09-21 16:10:26.572732"], ["updated_at", "2019-09-21 16:10:26.572732"]]
+  [1m[35m (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mNeewom::CustomForm Load (0.2ms)[0m  [1m[34mSELECT "neewom_forms".* FROM "neewom_forms" ORDER BY "neewom_forms"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mNeewom::CustomField Load (0.3ms)[0m  [1m[34mSELECT "neewom_fields".* FROM "neewom_fields" WHERE "neewom_fields"."form_id" = $1 ORDER BY "neewom_fields"."order" ASC[0m  [["form_id", 1]]
+  [1m[36mNeewom::CustomForm Load (0.3ms)[0m  [1m[34mSELECT "neewom_forms".* FROM "neewom_forms" WHERE "neewom_forms"."key" = $1 LIMIT $2[0m  [["key", "my_form"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mNeewom::CustomField Load (0.3ms)[0m  [1m[34mSELECT "neewom_fields".* FROM "neewom_fields" WHERE "neewom_fields"."form_id" = $1 ORDER BY "neewom_fields"."order" ASC[0m  [["form_id", 1]]
+  [1m[36mNeewom::CustomField Update (0.4ms)[0m  [1m[33mUPDATE "neewom_fields" SET "order" = $1, "updated_at" = $2 WHERE "neewom_fields"."id" = $3[0m  [["order", 0], ["updated_at", "2019-09-21 16:10:26.584687"], ["id", 2]]
+  [1m[36mNeewom::CustomField Create (0.3ms)[0m  [1m[32mINSERT INTO "neewom_fields" ("form_id", "order", "label", "name", "input", "virtual", "validations", "collection_params", "label_method", "value_method", "input_html", "custom_options", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING "id"[0m  [["form_id", 1], ["order", 1], ["label", "Third field"], ["name", "third_field"], ["input", "text_field"], ["virtual", true], ["validations", "{}"], ["collection_params", "null"], ["label_method", "name"], ["value_method", "id"], ["input_html", "{}"], ["custom_options", "{}"], ["created_at", "2019-09-21 16:10:26.587169"], ["updated_at", "2019-09-21 16:10:26.587169"]]
+  [1m[36mNeewom::CustomField Destroy (0.3ms)[0m  [1m[31mDELETE FROM "neewom_fields" WHERE "neewom_fields"."id" = $1[0m  [["id", 1]]
+  [1m[36mNeewom::CustomForm Update (0.3ms)[0m  [1m[33mUPDATE "neewom_forms" SET "crc32" = $1, "updated_at" = $2 WHERE "neewom_forms"."id" = $3[0m  [["crc32", "127534301"], ["updated_at", "2019-09-21 16:10:26.590197"], ["id", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mNeewom::CustomForm Load (0.2ms)[0m  [1m[34mSELECT "neewom_forms".* FROM "neewom_forms" ORDER BY "neewom_forms"."id" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mNeewom::CustomField Load (0.4ms)[0m  [1m[34mSELECT "neewom_fields".* FROM "neewom_fields" WHERE "neewom_fields"."form_id" = $1 ORDER BY "neewom_fields"."order" ASC[0m  [["form_id", 1]]
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
