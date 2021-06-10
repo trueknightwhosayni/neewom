@@ -1,6 +1,7 @@
 require "neewom/version"
 
 require "neewom/proxies/builders_and_finders"
+require "neewom/collection"
 require "neewom/serializer"
 require "neewom/abstract_field"
 require "neewom/abstract_form"

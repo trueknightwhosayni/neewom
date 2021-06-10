@@ -11,7 +11,7 @@ module Neewom
       # 'radio_button_collection',
       SELECT              = 'select_field',
       MULTIPLE_SELECT     = 'multiple_select_field',
-      SUBMIT              = 'submit',  
+      SUBMIT              = 'submit',
       TEXTAREA            = 'text_area',
       TEXT                = 'text_field',
       CHECKBOX            = 'checkbox',
@@ -32,10 +32,10 @@ module Neewom
     def label
       @label || name.to_s.humanize
     end
-    
+
     def input
       @input || 'text_field'
-    end  
+    end
 
     def virtual
       @virtual.nil? ? true : @virtual
@@ -63,6 +63,12 @@ module Neewom
 
     def value_method
       @value_method || :id
+    end
+
+    def build_collection(bind)
+      return collection if collection.present?
+
+      Neewom::Collection.build_for_field(self, bind)
     end
   end
 end

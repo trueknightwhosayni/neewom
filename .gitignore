@@ -5,7 +5,41 @@
 /doc/
 /pkg/
 /spec/reports/
-/tmp/
+# Ignore bundler config.
+/spec/dummy/.bundle
+
+# Ignore the default SQLite database.
+/spec/dummy/db/*.sqlite3
+/spec/dummy/db/*.sqlite3-*
+
+# Ignore all logfiles and tempfiles.
+/spec/dummy/log/*
+/spec/dummy/tmp/*
+!/spec/dummy/log/.keep
+!/spec/dummy/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/spec/dummy/tmp/pids/*
+!/spec/dummy/tmp/pids/
+!/spec/dummy/tmp/pids/.keep
+
+# Ignore uploaded files in development.
+/spec/dummy/storage/*
+!/spec/dummy/storage/.keep
+
+/spec/dummy/public/assets
+/spec/dummy.byebug_history
+
+# Ignore master key for decrypting credentials and more.
+/spec/dummy/config/master.key
+
+/spec/dummy/public/packs
+/spec/dummy/public/packs-test
+/spec/dummy/node_modules
+/spec/dummy/yarn-error.log
+/spec/dummyyarn-debug.log*
+/spec/dummy.yarn-integrity
+/spec/dummy/tmp/
 
 # rspec failure tracking
 .rspec_status

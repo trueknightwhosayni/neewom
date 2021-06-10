@@ -25,7 +25,7 @@ gem 'neewom'
 
 Copy a default form template
 
-**app/views/neewom_forms/form.html.erb**
+**app/views/neewom_forms/_form.html.erb**
 
 ```ruby
 <%= form_for @resource, url: form_url, method: form_method do |f| %>
@@ -46,15 +46,7 @@ Copy a default form template
       <% when Neewom::AbstractField::PHONE %>
         <%= f.phone_field field.name, field.input_html %>
       <% when Neewom::AbstractField::SELECT %>
-        <% if field.collection.present? %>
-          <% collection = field.collection %>
-        <% else %>
-          <% method_params = field.collection_params.map { |method_name| public_send(method_name) } %>
-          <% collection = field.collection_klass.constintize.public_send(field.collection_method, *method_params) %>
-        <% end %>
-
-        <% options = collection.map { |i| [i.public_send(field.label_method), i.public_send(field.value_method)] } %>
-
+        <% options = field.buld_collection(binding).map { |i| [i.public_send(field.label_method), i.public_send(field.value_method)] } %>
         <%= f.select field.name, options, field.input_html %>
       <% when Neewom::AbstractField::SUBMIT %>
         <%= f.submit field.label, {name: field.name}.merge(field.input_html) %>
@@ -130,6 +122,7 @@ Neewom::AbstractForm.build(
 2. **repository_klass** (*required*) - An active record model name with configured neewom attributes
 3. **fields** (*required*) - A hash with fields config.
 4. **template** - form template name ("form" by default)
+5. **persist_submit_controls** - flag for controling submit button persistance. Need if your submit not just a button, but also a value
 
 ### Field attrbutes
 
@@ -138,11 +131,12 @@ The hash keys are also a names.
 1. **label** - Input label. By default it's `name.to_s.humanize`
 2. **input** - Field input. By default it's 'text_field'. Check the `Neewom::AbstractField::SUPPORTED_FIELDS` to get the list of supported inputs
 3. **virtual** - Boolean, true by default. Should be false if you need to store data in a real column instead of the jsonb one
-4. **validations** - Hash, by default an empty one. Should be the standard rails validations
+4. **validations** - Array of Hashes, or Hash by default an empty one. Should be the standard rails validations
 5. **collection** - Collection of objects for the select input. Can not be stored to the database
 6. **label_method** - A label method for collection. Used while building options for select
 7. **value_method** - A value method for collection. Used while building options for select. It's 'id' by default
 8. **input_html** - A hash with the HTML attributes
+9. **custom_options** - A hash to provide any other additional information
 
 Another way to define a collection is to pass three params
 
@@ -252,6 +246,97 @@ class CustomController < ApplicationController
 end
 ```
 
+## Validations
+
+Multiple validations example
+
+```ruby
+def form
+  @form ||= Neewom::AbstractForm.build(
+    id: :custom_user_form,
+    repository_klass: 'User',
+    fields: {
+      name: {
+        virtual: true,
+        validations: [
+          {presence: true, on: :update},
+          {length: { minimum: 10 }}
+        ]
+      },
+    }
+  )
+end
+helper_method :form
+```
+
+## Collections
+
+You can build a field collection within the form object.
+
+```ruby
+def form
+  @form ||= Neewom::AbstractForm.build(
+    id: :custom_user_form,
+    repository_klass: 'User',
+    fields: {
+      name: {
+        virtual: true,
+        collection: [OpenStruct.new(id: '1', name: 'Dave'), OpenStruct.new(id: '1', name: 'Bruce')]
+      },
+    }
+  )
+end
+helper_method :form
+```
+
+Specifying custom methods also allowed
+
+```ruby
+def form
+  @form ||= Neewom::AbstractForm.build(
+    id: :custom_user_form,
+    repository_klass: 'User',
+    fields: {
+      name: {
+        virtual: true,
+        collection: [OpenStruct.new(uid: '1', title: 'London'), OpenStruct.new(uid: '1', title: 'Paris')],
+        label_method: :title,
+        value_method: :uid,
+      },
+    }
+  )
+end
+helper_method :form
+```
+
+Or you can specify the collection builder class
+
+```ruby
+def form
+  @form ||= Neewom::AbstractForm.build(
+    id: :custom_user_form,
+    repository_klass: 'User',
+    fields: {
+      name: {
+        virtual: true,
+        collection_klass: 'CollectionBuilder',
+        collection_method: 'called_method',
+        collection_params: [Neewom::Colllection.serialize(42), :current_user, "some_helper(current_user)"],
+      },
+    }
+  )
+end
+helper_method :form
+```
+
+In this example the `called_method` of the `CollectionBuilder` class (**class but not instance!**) will receive the next values:
+
+```ruby
+[42, current_user(), some_helper(current_user())]
+```
+
+It will use binding with eval under the hood, this is why this things works.
+
 ## Storing forms in the database.
 
 If you didn't used a `collection` in any field, you can store the form to the database.
@@ -266,6 +351,7 @@ def change
     t.string :crc32, null: false, index: { unique: true }
     t.string :repository_klass, null: false
     t.string :template, null: false
+    t.boolean :persist_submit_controls
 
     t.timestamps null: false
   end
@@ -283,6 +369,8 @@ def change
     t.string  :label_method
     t.string  :value_method
     t.string  :input_html
+    t.string  :custom_options
+    t.integer :order, default: 0
 
     t.timestamps null: false
   end

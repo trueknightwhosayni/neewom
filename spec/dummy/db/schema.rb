@@ -2,22 +2,18 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_21_160721) do
-
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+ActiveRecord::Schema.define(version: 2021_06_10_130113) do
 
   create_table "neewom_fields", force: :cascade do |t|
     t.integer "form_id", null: false
-    t.integer "order", default: 0, null: false
     t.string "label"
     t.string "name", null: false
     t.string "input"
@@ -30,6 +26,7 @@ ActiveRecord::Schema.define(version: 2019_09_21_160721) do
     t.string "value_method"
     t.string "input_html"
     t.string "custom_options"
+    t.integer "order", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["form_id", "name"], name: "index_neewom_fields_on_form_id_and_name", unique: true
@@ -41,7 +38,7 @@ ActiveRecord::Schema.define(version: 2019_09_21_160721) do
     t.string "crc32", null: false
     t.string "repository_klass", null: false
     t.string "template", null: false
-    t.boolean "persist_submit_controls", default: false
+    t.boolean "persist_submit_controls"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["crc32"], name: "index_neewom_forms_on_crc32", unique: true

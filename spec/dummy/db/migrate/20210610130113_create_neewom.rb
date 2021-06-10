@@ -1,4 +1,4 @@
-class CreateNeewomTables < ActiveRecord::Migration[6.0]
+class CreateNeewom < ActiveRecord::Migration[6.1]
   def change
     create_table :neewom_forms do |t|
       t.string :key, null: false, index: { unique: true }
@@ -6,14 +6,13 @@ class CreateNeewomTables < ActiveRecord::Migration[6.0]
       t.string :crc32, null: false, index: { unique: true }
       t.string :repository_klass, null: false
       t.string :template, null: false
-      t.boolean :persist_submit_controls, default: false
+      t.boolean :persist_submit_controls
 
       t.timestamps null: false
     end
 
     create_table :neewom_fields do |t|
       t.integer :form_id, null: false
-      t.integer :order, null: false, default: 0
       t.string  :label
       t.string  :name, null: false
       t.string  :input
@@ -26,6 +25,7 @@ class CreateNeewomTables < ActiveRecord::Migration[6.0]
       t.string  :value_method
       t.string  :input_html
       t.string  :custom_options
+      t.integer :order, default: 0
 
       t.timestamps null: false
     end
