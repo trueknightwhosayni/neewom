@@ -4,15 +4,19 @@ module Neewom
     MOD_KEY = "|mods:"
 
     def self.build_for_field(field, bind)
-      method_params = field.collection_params.map do |param|
-        if param.start_with?(SEQ_KEY)
-          deserialize(param)
-        else
-          eval param.to_s, bind
+      if field.collection_params.present?
+        method_params = field.collection_params.map do |param|
+          if param.start_with?(SEQ_KEY)
+            deserialize(param)
+          else
+            eval param.to_s, bind
+          end
         end
-      end
 
-      field.collection_klass.constantize.public_send(field.collection_method, *method_params)
+        field.collection_klass.constantize.public_send(field.collection_method, *method_params)
+      else
+        field.collection_klass.constantize.public_send(field.collection_method)
+      end
     end
 
     def self.deserialize(param)

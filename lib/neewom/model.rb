@@ -6,8 +6,6 @@ module Neewom
       attr_accessor :neewom_form
 
       def initialize_neewom_attributes(key_or_form)
-        data_column = self.class.neewom_attributes_column
-
         self.neewom_form =
           case key_or_form
           when Neewom::AbstractForm
@@ -18,13 +16,7 @@ module Neewom
             Neewom::CustomForm.find_by!(key: key_or_form).to_form
           end
 
-        neewom_form.virtual_fields.map do |field|
-          name = field.name.to_sym
-
-          singleton_class.class_eval do
-            store_accessor data_column, name
-          end
-        end
+        initialize_neewom_view neewom_form.virtual_fields.map(&:name).map(&:to_sym)
 
         neewom_form.fields.map do |field|
           name = field.name.to_sym
@@ -40,8 +32,25 @@ module Neewom
             end
           end
         end
+
+        self
       end
+      alias_method :neewom, :initialize_neewom_attributes
+
+      def initialize_neewom_view(*names)
+        data_column = self.class.neewom_attributes_column
+
+        names.each do |name|
+          singleton_class.class_eval do
+            store_accessor data_column, name
+          end
+        end
+
+        self
+      end
+      alias_method :neewom_view, :initialize_neewom_view
     end
+
 
     module ClassMethods
       attr_accessor :neewom_attributes_column

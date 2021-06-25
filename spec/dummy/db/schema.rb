@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_10_130113) do
+ActiveRecord::Schema.define(version: 2021_06_10_152620) do
 
   create_table "neewom_fields", force: :cascade do |t|
     t.integer "form_id", null: false
@@ -43,6 +43,14 @@ ActiveRecord::Schema.define(version: 2021_06_10_130113) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["crc32"], name: "index_neewom_forms_on_crc32", unique: true
     t.index ["key"], name: "index_neewom_forms_on_key", unique: true
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email"
+    t.string "password"
+    t.text "data"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
 end

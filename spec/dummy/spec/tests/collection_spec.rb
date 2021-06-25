@@ -36,6 +36,10 @@ RSpec.describe Neewom::Collection do
       def self.called_method(*args)
         args
       end
+
+      def self.another_method
+        'another_method'
+      end
     end
 
     context "when collection specified" do
@@ -51,16 +55,31 @@ RSpec.describe Neewom::Collection do
     end
 
     context "when collection dynamic" do
-      let(:field) do
-        Neewom::AbstractField.new.tap do |f|
-          f.collection_klass = 'CollectionBuilder'
-          f.collection_method = 'called_method'
-          f.collection_params = ["neewom|value|24.0", :current_user]
+      context 'when only class and method specified' do
+        let(:field) do
+          Neewom::AbstractField.new.tap do |f|
+            f.collection_klass = 'CollectionBuilder'
+            f.collection_method = 'another_method'
+          end
+        end
+
+        it 'uses the collection class to build the data' do
+          expect(ViewContext.new.render(field)).to eq('another_method')
         end
       end
 
-      it 'uses the collection class to build the data' do
-        expect(ViewContext.new.render(field)).to eq([24.0, 'Bruce Wayne'])
+      context 'when params exists' do
+        let(:field) do
+          Neewom::AbstractField.new.tap do |f|
+            f.collection_klass = 'CollectionBuilder'
+            f.collection_method = 'called_method'
+            f.collection_params = ["neewom|value|24.0", :current_user]
+          end
+        end
+
+        it 'uses the collection class to build the data' do
+          expect(ViewContext.new.render(field)).to eq([24.0, 'Bruce Wayne'])
+        end
       end
     end
   end

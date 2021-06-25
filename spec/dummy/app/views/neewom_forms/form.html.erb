@@ -1,0 +1,45 @@
+<%= form_for @resource, url: form_url, method: form_method do |f| %>
+  <% form.fields.each do |field| %>
+    <div>
+      <% unless field.input == Neewom::AbstractField::SUBMIT %>
+        <%= f.label field.name, field.label %>
+      <% end %>
+      <% case field.input %>
+      <% when Neewom::AbstractField::EMAIL %>
+        <%= f.email_field field.name, field.input_html %>
+      <% when Neewom::AbstractField::HIDDEN %>
+        <%= f.hidden_field field.name, field.input_html %>
+      <% when Neewom::AbstractField::NUMBER %>
+        <%= f.number_field field.name, field.input_html %>
+      <% when Neewom::AbstractField::PASSWORD %>
+        <%= f.password_field field.name, field.input_html %>
+      <% when Neewom::AbstractField::PHONE %>
+        <%= f.phone_field field.name, field.input_html %>
+      <% when Neewom::AbstractField::SELECT %>
+        <%
+          options = []
+          collection = field.build_collection(binding)
+
+          if collection.any?
+            if collection.first.is_a?(Array)
+              options = collection
+            else
+              options = collection.map { |i| [i.public_send(field.label_method), i.public_send(field.value_method)] }
+            end
+          end
+        %>
+
+        <%= f.select field.name, options, field.input_html %>
+      <% when Neewom::AbstractField::SUBMIT %>
+        <%= f.submit field.label, {name: field.name}.merge(field.input_html) %>
+      <% when Neewom::AbstractField::TEXTAREA %>
+        <%= f.text_area field.name, field.input_html %>
+      <% when Neewom::AbstractField::TEXT %>
+        <%= f.text_field field.name, field.input_html %>
+      <% end %>
+      <% if @resource.errors[field.name].any? %>
+        <span class="errors"><%= @resource.errors[field.name].join(', ')%></span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

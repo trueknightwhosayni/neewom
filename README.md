@@ -25,7 +25,7 @@ gem 'neewom'
 
 Copy a default form template
 
-**app/views/neewom_forms/_form.html.erb**
+**app/views/neewom_forms/form.html.erb**
 
 ```ruby
 <%= form_for @resource, url: form_url, method: form_method do |f| %>
@@ -46,7 +46,19 @@ Copy a default form template
       <% when Neewom::AbstractField::PHONE %>
         <%= f.phone_field field.name, field.input_html %>
       <% when Neewom::AbstractField::SELECT %>
-        <% options = field.buld_collection(binding).map { |i| [i.public_send(field.label_method), i.public_send(field.value_method)] } %>
+        <%
+          options = []
+          collection = field.build_collection(binding)
+
+          if collection.any?
+            if collection.first.is_a?(Array)
+              options = collection
+            else
+              options = collection.map { |i| [i.public_send(field.label_method), i.public_send(field.value_method)] }
+            end
+          end
+        %>
+
         <%= f.select field.name, options, field.input_html %>
       <% when Neewom::AbstractField::SUBMIT %>
         <%= f.submit field.label, {name: field.name}.merge(field.input_html) %>
@@ -182,7 +194,11 @@ end
 ### The complete controller example
 
 ```ruby
-class CustomController < ApplicationController
+class UsersController < ApplicationController
+  def index
+    @collection = User.all.map { |user| user.neewom_view(:name, :role) }
+  end
+
   def new
     @resource = form.build_resource
     render "neewom_forms/#{form.template}"
@@ -198,6 +214,29 @@ class CustomController < ApplicationController
     end
   end
 
+  def edit
+    @resource = form.find(params[:id])
+
+    render "neewom_forms/#{form.template}"
+  end
+
+  def update
+    @resource = form.find_and_apply_inputs(params[:id], permitted_params)
+
+    if @resource.save
+      redirect_to root_path
+    else
+      render "neewom_forms/#{form.template}"
+    end
+  end
+
+  def destroy
+    @resource = form.find(params[:id])
+    @resource.destroy
+
+    redirect_to root_path
+  end
+
   private
 
   def permitted_params
@@ -205,12 +244,12 @@ class CustomController < ApplicationController
   end
 
   def form_url
-    custom_index_path
+    @resource && @resource.persisted? ? user_path(@resource) : users_path
   end
   helper_method :form_url
 
   def form_method
-    :post
+    @resource && @resource.persisted? ? :patch : :post
   end
   helper_method :form_method
 
@@ -222,6 +261,25 @@ class CustomController < ApplicationController
         name: {
           virtual: true
         },
+        role: {
+          virtual: true,
+          input: 'select_field',
+          collection: ['admin', 'quest'].map { |r| [r, r] }
+        },
+        inviter: {
+          virtual: true,
+          input: 'select_field',
+          collection_klass: 'User',
+          collection_method: :all_with_neewom,
+          collection_params: [:form]
+        },
+        manager: {
+          virtual: true,
+          input: 'select_field',
+          collection_klass: 'Managers',
+          collection_method: :for_user,
+          collection_params: [Neewom::Collection.serialize('EN'), :current_user, "some_helper(current_user)"]
+        },
         email: {
           virtual: false,
           input: 'email_field'
@@ -229,7 +287,7 @@ class CustomController < ApplicationController
         password: {
           virtual: false,
           input: 'password_field',
-          validations: {presence: true, confirmation: true}
+          validations: [{presence: true, on: :update}, {confirmation: true, allow_blank: true }]
         },
         password_confirmation: {
           virtual: false,
@@ -245,6 +303,47 @@ class CustomController < ApplicationController
   helper_method :form
 end
 ```
+
+# Reading fields
+
+To be able to read data from the model you need to define form fields. There are several ways to do this
+
+```ruby
+@user = User.first
+
+# in this case you need to specify the virtual fields list
+@user = @user.neewom_view(:name, :role, :some_field)
+
+# in this case you need to specify the instance of the Neewom::AbstractForm
+form = Neewom::AbstractForm.build(
+  id: :custom_user_form,
+  repository_klass: 'User',
+  fields: {
+    name: {
+      virtual: true
+    },
+  }
+)
+@user = @user.neewom(form)
+
+# in this case you need to specify the instance of the Neewom::CustomForm
+form = Neewom::CustomForm.first
+@user = @user.neewom(form)
+
+# in this case you need to specify the id of of the stored Neewom::CustomForm
+form = Neewom::AbstractForm.build(
+  id: :custom_user_form,
+  repository_klass: 'User',
+  fields: {
+    name: {
+      virtual: true
+    },
+  }
+)
+form.store!
+@user = @user.neewom(:custom_user_form)
+```
+
 
 ## Validations
 
@@ -336,6 +435,10 @@ In this example the `called_method` of the `CollectionBuilder` class (**class bu
 ```
 
 It will use binding with eval under the hood, this is why this things works.
+
+## Custom field inputs
+
+You can push new value into the `Neewom::AbstractField::SUPPORTED_FIELDS` array and then update your view to support new field
 
 ## Storing forms in the database.
 

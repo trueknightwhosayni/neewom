@@ -5,14 +5,14 @@ module Neewom
         resource = repository_klass.constantize.new
         apply_inputs(resource, controller_params, initial_values: initial_values)
       end
-  
+
       def apply_inputs(resource, controller_params, initial_values: {})
         return unless resource.present?
 
-        resource.initialize_neewom_attributes(self) if resource.respond_to?(:initialize_neewom_attributes)        
+        resource.initialize_neewom_attributes(self) if resource.respond_to?(:initialize_neewom_attributes)
 
         if controller_params.present?
-          params = permit_params(controller_params)
+          params = controller_params
 
           initial_values.each do |field, value|
             if resource.respond_to?(:"#{field}=")
@@ -22,40 +22,40 @@ module Neewom
             end
           end
 
-          data = persisted_fields.each_with_object({}) do |field, acc| 
-            acc[field.name.to_sym] = params[field.name.to_sym] if params.has_key?(field.name.to_sym) 
+          data = persisted_fields.each_with_object({}) do |field, acc|
+            acc[field.name.to_sym] = params[field.name.to_sym] if params.has_key?(field.name.to_sym)
           end
 
-          resource.assign_attributes(data) 
+          resource.assign_attributes(data)
         end
-  
+
         resource
-      end  
+      end
 
       def parse_submit_control_value(controller_params)
-        submit_fields.each_with_object({}) do |field, acc| 
+        submit_fields.each_with_object({}) do |field, acc|
           acc[field.name.to_sym] = controller_params[field.name.to_sym] if controller_params.has_key?(field.name.to_sym)
         end
       end
-      
+
       def find(id)
         resource = repository_klass.constantize.find(id)
         resource.initialize_neewom_attributes(self)
-  
+
         resource
       end
-  
+
       def find_by(options)
         resource = repository_klass.constantize.find_by(options)
         resource.initialize_neewom_attributes(self) if resource.present?
-  
+
         resource
       end
-  
+
       def find_by!(options)
         resource = repository_klass.constantize.find_by!(options)
         resource.initialize_neewom_attributes(self)
-  
+
         resource
       end
 
@@ -71,17 +71,13 @@ module Neewom
         apply_inputs(find_by!(options), form_params, initial_values: initial_values)
       end
 
-      def permit_params(controller_params)
-        controller_params.require(strong_params_require).permit(strong_params_permit)
-      end
-
       def strong_params_require
         repository_klass.constantize.model_name.param_key.to_sym
       end
-  
+
       def strong_params_permit
         fields.map(&:name)
       end
     end
   end
-end  
+end
