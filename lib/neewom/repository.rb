@@ -12,18 +12,18 @@ module Neewom
 
       form_record.transaction do
         form_record.assign_attributes(
-          repository_klass: abstract_form.repository_klass, 
-          template: abstract_form.template, 
-          crc32: current_crc, 
+          repository_klass: abstract_form.repository_klass,
+          template: abstract_form.template,
+          crc32: current_crc,
           persist_submit_controls: (abstract_form.persist_submit_controls || false)
         )
         existing_fields = form_record.custom_fields.to_a
 
         abstract_form.fields.each_with_index do |field, index|
           if field.collection.present?
-            raise "Form with specified collection could not be stored."  
+            raise "Form with specified collection could not be stored."
           end
-                    
+
           field_record = existing_fields.find { |item| item.name.to_s == field.name.to_s }
           field_record ||= Neewom::CustomField.new(custom_form: form_record, name: field.name)
 
@@ -47,7 +47,7 @@ module Neewom
 
         removable_fields = existing_fields.select { |item| abstract_form.fields.none? { |f| f.name.to_s == item.name.to_s } }
         removable_fields.each(&:destroy)
-        
+
         form_record.save!
       end
 
@@ -70,7 +70,7 @@ module Neewom
         field.validations       = JSON.parse(field_record.validations, symbolize_names: true)
         field.collection_klass  = field_record.collection_klass
         field.collection_method = field_record.collection_method
-        field.collection_params = JSON.parse(field_record.collection_params)&.map(&:to_sym)
+        field.collection_params = JSON.parse(field_record.collection_params)
         field.label_method      = field_record.label_method
         field.value_method      = field_record.value_method
         field.input_html        = JSON.parse(field_record.input_html, symbolize_names: true)
@@ -82,7 +82,7 @@ module Neewom
       form
     end
 
-    private 
+    private
 
     def calculate_crc32(abstract_form)
       buff = [abstract_form.id, abstract_form.repository_klass, abstract_form.template, abstract_form.persist_submit_controls].join(':')
@@ -103,8 +103,8 @@ module Neewom
           field.custom_options.to_json
         ].map(&:to_s)
       end.flatten.join(':')
-      
+
       Zlib::crc32(buff).to_s
-    end 
-  end  
+    end
+  end
 end
